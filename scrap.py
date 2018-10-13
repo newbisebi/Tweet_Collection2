@@ -136,10 +136,11 @@ def write_data(res, keyword):
 def main(older=True):
     keywords = (
         session.query(KEYWORD)
-        .filter(KEYWORD.active is True)
+        .filter(KEYWORD.active == True) # noqa
         .order_by(KEYWORD.nb_rech)
         .all()
     )
+    print(keywords)
     for keyword in keywords:
         run_keyword(keyword, older)
     lg.info("Program over")

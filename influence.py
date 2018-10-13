@@ -36,7 +36,7 @@ def api_query(liste_id):
 
 
 def main():
-    tweets_to_process = session.query(TWEET).filter(TWEET.nb_rt is None)
+    tweets_to_process = session.query(TWEET).filter(TWEET.nb_rt == None) # noqa
     while tweets_to_process.count() > 0:
         lg.info(
             f"""Searching influence data. Tweets remaining :
@@ -53,7 +53,7 @@ def main():
 
         session.commit()
         session.close()
-        tweets_to_process = session.query(TWEET).filter(TWEET.nb_rt is None)
+        tweets_to_process = session.query(TWEET).filter(TWEET.nb_rt == None) # noqa
 
 
 if __name__ == '__main__':
