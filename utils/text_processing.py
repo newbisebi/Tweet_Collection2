@@ -2,26 +2,32 @@ import treetaggerwrapper
 from nltk.tokenize import word_tokenize
 from string import punctuation
 
-punctuation = [p for p in punctuation if p not in "!?$#%&+-"] #On veut garder certains caractères de ponctuation
+# On veut garder certains caractères de ponctuation
+punctuation = [p for p in punctuation if p not in "!?$#%&+-"] 
 
 par = "text_processing_tools/french-utf8.par"
-tagger = treetaggerwrapper.TreeTagger(TAGLANG='fr',TAGPARFILE = par)
-exclude_type = ["ADV","DET:ART","DET:POS","KON","NUM","PRO","PRO:DEM","SENT"
-                "PRO:IND","PRO:PER","PRO:POS","PRO:REL","PRP","PRP:det","PUN","PUN:cit","SYM"]
+tagger = treetaggerwrapper.TreeTagger(TAGLANG='fr', TAGPARFILE=par)
+exclude_type = ["ADV", "DET:ART", "DET:POS", "KON", "NUM", "PRO",
+                "PRO:DEM", "SENT", "PRO:IND", "PRO:PER", "PRO:POS",
+                "PRO:REL", "PRP", "PRP:det", "PUN", "PUN:cit", "SYM"]
 
-def processing(text, return_token = False):
-    text = text.replace('#','# ')
+
+def processing(text, return_token=False):
+    text = text.replace('#', '# ')
     text_tagged = tagger.tag_text(text)
-    text_tagged = treetaggerwrapper.make_tags(text_tagged, exclude_nottags=True)
-    list_lemm = [tag.lemma for tag in text_tagged if tag.pos not in exclude_type]
-    #liste = reduc(liste)
+    text_tagged = treetaggerwrapper.make_tags(
+        text_tagged, exclude_nottags=True)
+    list_lemm = [
+        tag.lemma for tag in text_tagged if tag.pos not in exclude_type
+        ]
+    # liste = reduc(liste)
     new_text = ' '.join(list_lemm)
     # new_text = new_text.replace(u"url-remplacée",u"")
     # new_text = new_text.replace(u"email-remplacé",u"")
     # new_text = new_text.replace(u"dns-remplacé",u"")
     for p in punctuation:
         new_text = new_text.replace(p, "")
-    new_text = new_text.replace("  "," ").replace("  "," ").lower()
+    new_text = new_text.replace("  ", " ").replace("  ", " ").lower()
     if new_text == "" or new_text is None:
         new_text = "empty-tweet"
 
@@ -30,14 +36,17 @@ def processing(text, return_token = False):
 
     return new_text
 
+
 def format_sentence(sent):
     """Format data for classification"""
     sent = processing(sent)
-    return ({ word: True for word in word_tokenize(sent) })
+    return ({word: True for word in word_tokenize(sent)})
 
 
 if __name__ == '__main__':
     pass
+    # Test data:
+
     # processing(""" @soissonschris Bugatti Chiron #Mondial2018 https://t.co/b0MATr1iJC """)
     # processing(""" "Découvrez des assurances qui s'adaptent à vos nouvelles attentes...
     # https://t.co/O7PlaPzPvP https://t.co/T0U6Y7MLfV" """)

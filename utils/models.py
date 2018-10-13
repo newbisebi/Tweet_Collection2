@@ -3,23 +3,19 @@
 Format des tables utilisées dans la base de données
 """
 import time
-from datetime import datetime, date
-import sqlalchemy #Interface sqlite
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime, Float, Boolean
-from sqlalchemy.orm import mapper, sessionmaker, relationship, backref
+from datetime import datetime
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime, Float, Boolean
-from sqlalchemy.orm import mapper, sessionmaker
-import time
+from sqlalchemy.orm import sessionmaker, relationship, backref
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
 from config.config import FICHIER_BDD
 
-#Détermination de la date actuelle
+# Détermination de la date actuelle
 auj = time.strftime('%y_%m_%d', time.localtime())
 
 
 Base = declarative_base()
+
 
 class KEYWORD(Base):
     __tablename__ = 'keywords'
@@ -30,12 +26,13 @@ class KEYWORD(Base):
     plus_recent_tweet = Column(Integer)
 
     def __init__(self, valeur):
-        self.valeur=valeur
-        self.nb_rech=0
-        self.active=True
+        self.valeur = valeur
+        self.nb_rech = 0
+        self.active = True
 
     def __repr__(self):
         return self.valeur
+
 
 class COMPTE(Base):
     __tablename__ = "compte"
@@ -53,7 +50,6 @@ class COMPTE(Base):
         self.nb_abonnements = user_response['friends_count']
         self.nb_abonnes = user_response["followers_count"]
         self.nb_tweets = user_response["statuses_count"]
-
 
     def __repr__(self):
         return self.user_name
@@ -84,8 +80,8 @@ class TWEET(Base):
     compte = relationship(
         COMPTE,
         backref=backref('tweets',
-                         uselist=True,
-                         cascade='delete,all'))
+                        uselist=True,
+                        cascade='delete,all'))
 
     def __init__(self, status):
         self.json = str(status)
@@ -95,10 +91,13 @@ class TWEET(Base):
         date = datetime.strptime(date, '%a %b %d %H:%M:%S +0000 %Y')
         self.mois = date.strftime('%m')
         self.annee = date.strftime('%Y')
-        self.hashtags = ','.join([ht["text"] for ht in status["entities"]["hashtags"]])
+        self.date = date
+        self.hashtags = ','.join(
+            [ht["text"] for ht in status["entities"]["hashtags"]])
         mentions = status["entities"]["user_mentions"]
         if mentions:
-            self.mentions = ','.join([f"{el['screen_name']} ({el['id']})" for el in mentions])
+            self.mentions = ','.join(
+                [f"{el['screen_name']} ({el['id']})" for el in mentions])
         else:
             self.mentions = ""
         id_dest = status["in_reply_to_user_id"]
@@ -114,12 +113,11 @@ class TWEET(Base):
             self.retweet = False
             self.texte = status["full_text"]
 
-
     def __repr__(self):
         return f"{self.user_name} >>> {self.texte}"
 
 
-#CONNECTION ET CREATION DES TABLES
+# CONNECTION ET CREATION DES TABLES
 engine = sqlalchemy.create_engine(FICHIER_BDD, echo=False)
 Session = sessionmaker(bind=engine)
 session = Session()
