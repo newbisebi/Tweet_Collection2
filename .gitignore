@@ -2,4 +2,4 @@
 *.__pycache__*
 config/config.py
 *.sqlite
-logs/*
+logs/activity*
