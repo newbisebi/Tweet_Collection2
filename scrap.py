@@ -116,6 +116,7 @@ def write_data(res, keyword):
             tweet = TWEET(tw)
             tweet.compte = compte
             session.add(tweet)
+            lg.info(f"adding tweet {tweet_id}")
 
         # Updating Keyword data :
         if keyword.plus_ancien_tweet:
